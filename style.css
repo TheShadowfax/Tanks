@@ -1,0 +1,25 @@
+#grid {
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  height: 100vh;
+}
+
+.grid-item {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(51, 51, 51, 0.25);
+}
+
+.black {
+  background-color: #0005;
+}
