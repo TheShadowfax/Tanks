@@ -7,6 +7,17 @@ export class Tank extends Vector {
 
   move(): void {
     let { x: cx, y: cy } = this.getPosition();
+    const availableMoves = Game.getAvailableMoves(cx, cy);
+
+    //no moves available
+    if (availableMoves.length === 0) return;
+
+    //check if tank can continue in the same direction
+    if (availableMoves.indexOf(this.getDirection()) === -1) {
+      const randomMove = Math.floor(Math.random() * availableMoves.length);
+      this.setDirection(availableMoves[randomMove]);
+    }
+
     switch (this.getDirection()) {
       case IDirection.RIGHT: {
         this.setPosition((cx + 1) % Game.MAX_CELLS_HORIZONTALLY, cy);
@@ -36,14 +47,14 @@ export class Tank extends Vector {
     }
   }
 
-  private check4Neighbours() {}
-
   draw() {
-    document
-      .getElementById(`${this.oldPosition.x}x${this.oldPosition.y}`)
-      .classList.remove('black');
+    if (this.oldPosition) {
+      document
+        .getElementById(`${this.oldPosition.x}x${this.oldPosition.y}`)
+        .classList.remove('black', 'occupied');
+    }
     document
       .getElementById(`${this.getPosition().x}x${this.getPosition().y}`)
-      .classList.add('black');
+      .classList.add('black', 'occupied');
   }
 }

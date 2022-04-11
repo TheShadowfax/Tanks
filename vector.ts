@@ -23,6 +23,10 @@ export abstract class Vector {
     return this.direction;
   }
 
+  setDirection(direction: IDirection) {
+    this.direction = direction;
+  }
+
   draw() {}
 }
 
