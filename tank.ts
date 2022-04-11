@@ -5,10 +5,13 @@ import { IDirection, Vector } from './vector';
 export class Tank extends Vector {
   private subscriptions = new Subscription();
 
+  setId(id: string) {
+    this.id = id;
+  }
   move(): void {
     let { x: cx, y: cy } = this.getPosition();
     const availableMoves = Game.getAvailableMoves(cx, cy);
-
+    console.log('availablemoves', availableMoves);
     //no moves available
     if (availableMoves.length === 0) return;
 
@@ -49,12 +52,17 @@ export class Tank extends Vector {
 
   draw() {
     if (this.oldPosition) {
-      document
-        .getElementById(`${this.oldPosition.x}x${this.oldPosition.y}`)
-        .classList.remove('black', 'occupied');
+      const o = document.getElementById(
+        `${this.oldPosition.x}x${this.oldPosition.y}`
+      );
+      o.classList.remove('black', 'occupied');
+      o.innerText = '';
     }
-    document
-      .getElementById(`${this.getPosition().x}x${this.getPosition().y}`)
-      .classList.add('black', 'occupied');
+    const n = document.getElementById(
+      `${this.getPosition().x}x${this.getPosition().y}`
+    );
+
+    n.classList.add('black', 'occupied');
+    n.innerText = this.id;
   }
 }

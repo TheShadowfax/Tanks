@@ -1,4 +1,5 @@
-import { Subscription, interval } from 'rxjs';
+import { Subscription, interval, fromEvent } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 import { Tank } from './tank';
 import { IDirection, Point } from './vector';
 
@@ -26,10 +27,20 @@ export class Game {
   }
 
   private gameLoop() {
-    this.npcTanks.forEach((tank) => {
-      tank.move();
-      tank.draw();
-    });
+    fromEvent(document, 'keyup')
+      .pipe(filter((event) => event && event.key === 'Enter'))
+      .subscribe(() => {
+        console.log('enter');
+        this.npcTanks.forEach((tank) => {
+          tank.move();
+          tank.draw();
+        });
+        console.log(this.npcTanks);
+      });
+    // const sub = interval(500).subscribe(() => {
+    //
+    // });
+    // this.subscriptions.add(sub);
   }
 
   private drawScreen() {
@@ -62,35 +73,39 @@ export class Game {
   }
 
   public static getAvailableMoves(x, y) {
+    console.log(Game.MAX_CELLS_HORIZONTALLY, Game.MAX_CELLS_VERTICALLY, x, y);
     const availableSlots: IDirection[] = new Array();
     //RIGHT
-    if (x !== Game.MAX_CELLS_HORIZONTALLY) {
-      const item = document.getElementById(`${x + 1}-${y}`);
-      if (item && !item.classList.contains('occupied')) {
+    if (x < Game.MAX_CELLS_HORIZONTALLY - 1) {
+      const item = document.getElementById(`${x + 1}x${y}`);
+      if (!item.classList.contains('occupied')) {
         availableSlots.push(IDirection.RIGHT);
       }
     }
 
     //LEFT
-    if (x !== 0) {
-      const item = document.getElementById(`${x - 1}-${y}`);
-      if (item && !item.classList.contains('occupied')) {
+    if (x > 0) {
+      const item = document.getElementById(`${x - 1}x${y}`);
+      if (!item.classList.contains('occupied')) {
         availableSlots.push(IDirection.LEFT);
       }
     }
 
     //UP
-    if (x !== 0 && y !== 0) {
-      const item = document.getElementById(`${x - 1}-${y - 1}`);
-      if (item && !item.classList.contains('occupied')) {
+    if (x > 0 && y > 0) {
+      const item = document.getElementById(`${x - 1}x${y - 1}`);
+      if (!item.classList.contains('occupied')) {
         availableSlots.push(IDirection.UP);
       }
     }
 
     //DOWN
-    if (x !== Game.MAX_CELLS_HORIZONTALLY && y !== Game.MAX_CELLS_VERTICALLY) {
-      const item = document.getElementById(`${x + 1}-${y + 1}`);
-      if (item && !item.classList.contains('occupied')) {
+    if (
+      x < Game.MAX_CELLS_HORIZONTALLY - 1 &&
+      y < Game.MAX_CELLS_VERTICALLY - 1
+    ) {
+      const item = document.getElementById(`${x + 1}x${y + 1}`);
+      if (!item.classList.contains('occupied')) {
         availableSlots.push(IDirection.DOWN);
       }
     }
@@ -114,6 +129,7 @@ export class Game {
       }
 
       const tank = new Tank(IDirection[randomDirection], 1, point);
+      tank.setId(String(i));
       this.npcTanks.push(tank);
       tank.draw();
     }

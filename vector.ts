@@ -1,6 +1,7 @@
 export abstract class Vector {
   protected oldPosition: Point = null;
-
+  protected id:string;
+  
   constructor(
     private direction: IDirection,
     private magnitude: number,
@@ -11,7 +12,7 @@ export abstract class Vector {
 
   setPosition(x: number, y: number) {
     console.log('from:', this.position, ' to: ', { x, y });
-    this.oldPosition = this.position;
+    this.oldPosition = { ...this.position };
     this.position.x = x;
     this.position.y = y;
   }
