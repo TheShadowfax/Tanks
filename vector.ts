@@ -10,6 +10,7 @@ export abstract class Vector {
   move() {}
 
   setPosition(x: number, y: number) {
+    console.log('from:', this.position, ' to: ', { x, y });
     this.oldPosition = this.position;
     this.position.x = x;
     this.position.y = y;

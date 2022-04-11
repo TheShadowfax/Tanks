@@ -1,3 +1,4 @@
+import { Subscription, interval } from 'rxjs';
 import { Tank } from './tank';
 import { IDirection, Point } from './vector';
 
@@ -9,6 +10,8 @@ export class Game {
 
   private readonly npcTanks = new Array<Tank>();
 
+  private subscriptions = new Subscription();
+
   constructor() {}
 
   public start() {
@@ -19,6 +22,14 @@ export class Game {
     this.drawScreen();
     this.drawGrid();
     this.addNPCTanks();
+    this.gameLoop();
+  }
+
+  private gameLoop() {
+    this.npcTanks.forEach((tank) => {
+      tank.move();
+      tank.draw();
+    });
   }
 
   private drawScreen() {
@@ -55,7 +66,7 @@ export class Game {
     //RIGHT
     if (x !== Game.MAX_CELLS_HORIZONTALLY) {
       const item = document.getElementById(`${x + 1}-${y}`);
-      if (!item.classList.contains('occupied')) {
+      if (item && !item.classList.contains('occupied')) {
         availableSlots.push(IDirection.RIGHT);
       }
     }
@@ -63,7 +74,7 @@ export class Game {
     //LEFT
     if (x !== 0) {
       const item = document.getElementById(`${x - 1}-${y}`);
-      if (!item.classList.contains('occupied')) {
+      if (item && !item.classList.contains('occupied')) {
         availableSlots.push(IDirection.LEFT);
       }
     }
@@ -71,7 +82,7 @@ export class Game {
     //UP
     if (x !== 0 && y !== 0) {
       const item = document.getElementById(`${x - 1}-${y - 1}`);
-      if (!item.classList.contains('occupied')) {
+      if (item && !item.classList.contains('occupied')) {
         availableSlots.push(IDirection.UP);
       }
     }
@@ -79,7 +90,7 @@ export class Game {
     //DOWN
     if (x !== Game.MAX_CELLS_HORIZONTALLY && y !== Game.MAX_CELLS_VERTICALLY) {
       const item = document.getElementById(`${x + 1}-${y + 1}`);
-      if (!item.classList.contains('occupied')) {
+      if (item && !item.classList.contains('occupied')) {
         availableSlots.push(IDirection.DOWN);
       }
     }
@@ -94,9 +105,14 @@ export class Game {
     for (let i = 0; i < numberOfTanks; i++) {
       const randomDirection = IDirection[this.getRandomArbitrary(0, 3)];
       let point = null;
-      do {
+      while (true) {
         point = this.getRandomPoint();
-      } while (!occupiedSlots.has(`${point.x}-${point.y}`));
+        if (!occupiedSlots.has(`${point.x}-${point.y}`)) {
+          occupiedSlots.add(`${point.x}-${point.y}`);
+          break;
+        }
+      }
+
       const tank = new Tank(IDirection[randomDirection], 1, point);
       this.npcTanks.push(tank);
       tank.draw();
